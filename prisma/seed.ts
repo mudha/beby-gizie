@@ -30,7 +30,8 @@ async function main() {
     'Malo',
     'Bangsalan',
     'Tamansari',
-    'Prayungan Sawoo',
+    'Prayungan',
+    'Sawoo',
     'Grogol',
   ];
 
@@ -56,15 +57,28 @@ async function main() {
     },
   });
 
-  await prisma.user.create({
-    data: {
-      name: 'Kasir Siwalan',
-      username: 'kasir',
-      passwordHash: hashSync('kasir123', 10),
-      role: 'EMPLOYEE',
-      branchId: 'branch-siwalan',
-    },
-  });
+  const cashiers = [
+    { name: 'Kasir Siwalan',    username: 'bgsiwalan',    password: 'bgsiwalan',    branchId: 'branch-siwalan' },
+    { name: 'Kasir Mlarak',     username: 'bgmlarak',     password: 'bgmlarak',     branchId: 'branch-mlarak' },
+    { name: 'Kasir Malo',       username: 'bgmalo',       password: 'bgmalo',       branchId: 'branch-malo' },
+    { name: 'Kasir Bangsalan',  username: 'bgbangsalan',  password: 'bgbangsalan',  branchId: 'branch-bangsalan' },
+    { name: 'Kasir Tamansari',  username: 'bgtamansari',  password: 'bgtamansari',  branchId: 'branch-tamansari' },
+    { name: 'Kasir Prayungan',  username: 'bgprayungan',  password: 'bgprayungan',  branchId: 'branch-prayungan' },
+    { name: 'Kasir Sawoo',      username: 'bgsawoo',      password: 'bgsawoo',      branchId: 'branch-sawoo' },
+    { name: 'Kasir Grogol',     username: 'bggrogol',     password: 'bggrogol',     branchId: 'branch-grogol' },
+  ];
+
+  for (const c of cashiers) {
+    await prisma.user.create({
+      data: {
+        name: c.name,
+        username: c.username,
+        passwordHash: hashSync(c.password, 10),
+        role: 'EMPLOYEE',
+        branchId: c.branchId,
+      },
+    });
+  }
 
   // 4. Create products with prices
   console.log('--- Seeding Products ---');
@@ -101,11 +115,12 @@ async function main() {
   }
 
   console.log('✅ Seeding completed!');
-  console.log('   📍 7 Cabang: Siwalan, Mlarak, Malo, Bangsalan, Tamansari, Prayungan Sawoo, Grogol');
+  console.log('   📍 8 Cabang: Siwalan, Mlarak, Malo, Bangsalan, Tamansari, Prayungan, Sawoo, Grogol');
   console.log('   🍲 6 Produk: Bubur Halus & Kasar (3k, 4k, 5k)');
   console.log('   👤 Admin: admin / admin123');
-  console.log('   👤 Kasir: kasir / kasir123');
+  console.log('   👤 8 Kasir: bgsiwalan, bgmlarak, bgmalo, bgbangsalan, bgtamansari, bgprayungan, bgsawoo, bggrogol');
 }
+
 
 main()
   .catch((e) => {
