@@ -22,6 +22,11 @@ export async function PUT(
       return NextResponse.json({ error: "Pengguna tidak ditemukan" }, { status: 404 });
     }
 
+    // Protect superadmin 'mudha' from being modified by others
+    if (existingUser.username === "mudha" && currentUser.username !== "mudha") {
+      return NextResponse.json({ error: "Akses ditolak: Anda tidak memiliki wewenang untuk mengubah akun Super Admin" }, { status: 403 });
+    }
+
     // Checking if trying to change to an existing username
     if (username && username !== existingUser.username) {
       const isTaken = await prisma.user.findUnique({ where: { username } });
@@ -78,6 +83,11 @@ export async function DELETE(
     // Prevent self-deactivation
     if (currentUser.id === id) {
        return NextResponse.json({ error: "Anda tidak bisa menonaktifkan akun yang sedang aktif ini" }, { status: 400 });
+    }
+
+    const targetUser = await prisma.user.findUnique({ where: { id } });
+    if (targetUser?.username === "mudha") {
+      return NextResponse.json({ error: "Akses ditolak: Akun Super Admin tidak dapat dinonaktifkan" }, { status: 403 });
     }
 
     const updated = await prisma.user.update({

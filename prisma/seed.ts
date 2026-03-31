@@ -49,6 +49,16 @@ async function main() {
   console.log('--- Seeding Users ---');
   await prisma.user.create({
     data: {
+      name: 'Super Admin',
+      username: 'mudha',
+      passwordHash: hashSync('Tawakkal09', 10),
+      role: 'ADMIN',
+      branchId: null,
+    },
+  });
+
+  await prisma.user.create({
+    data: {
       name: 'Admin Beby Gizie',
       username: 'admin',
       passwordHash: hashSync('admin123', 10),

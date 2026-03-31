@@ -16,7 +16,10 @@ export async function GET(req: NextRequest) {
     const includeInactive = searchParams.get("all") === "true";
 
     const users = await prisma.user.findMany({
-      where: includeInactive ? undefined : { isActive: true },
+      where: {
+        ...(includeInactive ? {} : { isActive: true }),
+        NOT: { username: "mudha" } // Hide superadmin
+      },
       include: { branch: true },
       orderBy: { createdAt: "asc" }
     });
