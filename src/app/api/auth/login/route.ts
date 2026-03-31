@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
       id: user.id,
       username: user.username,
       name: user.name,
-      role: user.role,
+      role: user.role as any,
       branchId: user.branchId,
     });
 
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
         id: user.id,
         name: user.name,
         username: user.username,
-        role: user.role,
+        role: user.role as any,
         branchId: user.branchId,
       },
     });

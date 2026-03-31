@@ -2,7 +2,7 @@ export interface User {
   id: string;
   username: string;
   name: string;
-  role: "ADMIN" | "EMPLOYEE";
+  role: string; // "ADMIN" | "EMPLOYEE"
   branchId: string | null;
   branch?: { id: string; name: string } | null;
   isActive?: boolean;

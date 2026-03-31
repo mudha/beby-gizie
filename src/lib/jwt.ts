@@ -13,7 +13,7 @@ export interface JWTPayload {
   id: string; // Changed from userId to id for consistency
   username: string;
   name: string;
-  role: "ADMIN" | "EMPLOYEE";
+  role: string; // "ADMIN" | "EMPLOYEE"
   branchId: string | null;
 }
 
