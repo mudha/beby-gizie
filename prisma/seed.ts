@@ -4,48 +4,50 @@ import { hashSync } from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Seeding database Beby Gizie (Offline Only)...');
+  console.log('🌱 Seeding database Beby Gizie...');
+
+  // 0. Clear existing data (order matters for foreign keys)
+  console.log('--- Clearing existing data ---');
+  await prisma.transactionItem.deleteMany();
+  await prisma.transaction.deleteMany();
+  await prisma.productPrice.deleteMany();
+  await prisma.product.deleteMany();
+  await prisma.user.deleteMany();
+  await prisma.branch.deleteMany();
+  await prisma.salesMethod.deleteMany();
 
   // 1. Create Sales Methods (Only OFFLINE)
   console.log('--- Seeding Sales Methods ---');
-  const methods = [
-    { name: 'Langsung', code: 'OFFLINE' },
-  ];
-
-  for (const m of methods) {
-    await prisma.salesMethod.upsert({
-      where: { code: m.code },
-      update: { name: m.name },
-      create: { name: m.name, code: m.code },
-    });
-  }
+  await prisma.salesMethod.create({
+    data: { name: 'Langsung', code: 'OFFLINE' },
+  });
 
   // 2. Create branches
   console.log('--- Seeding Branches ---');
-  const cabang1 = await prisma.branch.upsert({
-    where: { id: 'branch-utama' },
-    update: {},
-    create: {
-      id: 'branch-utama',
-      name: 'Pusat Gizie',
-    },
-  });
+  const branchNames = [
+    'Siwalan',
+    'Mlarak',
+    'Malo',
+    'Bangsalan',
+    'Tamansari',
+    'Prayungan Sawoo',
+    'Grogol',
+  ];
 
-  const cabang2 = await prisma.branch.upsert({
-    where: { id: 'branch-booth-1' },
-    update: {},
-    create: {
-      id: 'branch-booth-1',
-      name: 'Booth Organik 01',
-    },
-  });
+  for (const name of branchNames) {
+    const slug = name.toLowerCase().replace(/\s/g, '-');
+    await prisma.branch.create({
+      data: {
+        id: `branch-${slug}`,
+        name,
+      },
+    });
+  }
 
   // 3. Create users
   console.log('--- Seeding Users ---');
-  const admin = await prisma.user.upsert({
-    where: { username: 'admin' },
-    update: {},
-    create: {
+  await prisma.user.create({
+    data: {
       name: 'Admin Beby Gizie',
       username: 'admin',
       passwordHash: hashSync('admin123', 10),
@@ -54,48 +56,43 @@ async function main() {
     },
   });
 
-  const karyawan = await prisma.user.upsert({
-    where: { username: 'kasir' },
-    update: {},
-    create: {
-      name: 'Kasir Utama',
+  await prisma.user.create({
+    data: {
+      name: 'Kasir Siwalan',
       username: 'kasir',
       passwordHash: hashSync('kasir123', 10),
       role: 'EMPLOYEE',
-      branchId: cabang1.id,
+      branchId: 'branch-siwalan',
     },
   });
 
-  // 4. Create products
+  // 4. Create products with prices
   console.log('--- Seeding Products ---');
   const products = [
-    { name: 'Bubur Beras Putih Organik', price: 10000 },
-    { name: 'Bubur Beras Merah Organik', price: 12000 },
-    { name: 'Bubur Tim Ayam Kampung', price: 15000 },
-    { name: 'Bubur Tim Daging Sapi', price: 18000 },
-    { name: 'Bubur Kacang Hijau', price: 8000 },
+    { name: 'Bubur Halus 3k', price: 3000 },
+    { name: 'Bubur Halus 4k', price: 4000 },
+    { name: 'Bubur Halus 5k', price: 5000 },
+    { name: 'Bubur Kasar 3k', price: 3000 },
+    { name: 'Bubur Kasar 4k', price: 4000 },
+    { name: 'Bubur Kasar 5k', price: 5000 },
   ];
+
+  const method = await prisma.salesMethod.findUnique({ where: { code: 'OFFLINE' } });
 
   for (const product of products) {
     const slug = product.name.toLowerCase().replace(/\s/g, '-');
-    await prisma.product.upsert({
-      where: { id: `prod-${slug}` },
-      update: { name: product.name },
-      create: {
+    const created = await prisma.product.create({
+      data: {
         id: `prod-${slug}`,
         name: product.name,
         isActive: true,
       },
     });
 
-    // Add default price for OFFLINE
-    const method = await prisma.salesMethod.findUnique({ where: { code: 'OFFLINE' } });
     if (method) {
-      await prisma.productPrice.upsert({
-        where: { productId_salesMethodId: { productId: `prod-${slug}`, salesMethodId: method.id } },
-        update: { price: product.price },
-        create: {
-          productId: `prod-${slug}`,
+      await prisma.productPrice.create({
+        data: {
+          productId: created.id,
           salesMethodId: method.id,
           price: product.price,
         },
@@ -103,47 +100,11 @@ async function main() {
     }
   }
 
-  // 5. Create sample transactions (Only OFFLINE)
-  console.log('--- Seeding Sample Transactions ---');
-  const today = new Date();
-  
-  const trx1 = await prisma.transaction.create({
-    data: {
-      transactionNumber: `BG-${formatDate(today)}-0001`,
-      branchId: cabang1.id,
-      salesMethod: 'OFFLINE',
-      totalAmount: 22000,
-      createdByUserId: karyawan.id,
-      createdAt: today,
-      items: {
-        create: [
-          {
-            productId: 'prod-bubur-beras-merah-organik',
-            productNameSnapshot: 'Bubur Beras Merah Organik',
-            priceSnapshot: 12000,
-            quantity: 1,
-            subtotal: 12000,
-          },
-          {
-            productId: 'prod-bubur-beras-putih-organik',
-            productNameSnapshot: 'Bubur Beras Putih Organik',
-            priceSnapshot: 10000,
-            quantity: 1,
-            subtotal: 10000,
-          },
-        ],
-      },
-    },
-  });
-
   console.log('✅ Seeding completed!');
-}
-
-function formatDate(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}${m}${d}`;
+  console.log('   📍 7 Cabang: Siwalan, Mlarak, Malo, Bangsalan, Tamansari, Prayungan Sawoo, Grogol');
+  console.log('   🍲 6 Produk: Bubur Halus & Kasar (3k, 4k, 5k)');
+  console.log('   👤 Admin: admin / admin123');
+  console.log('   👤 Kasir: kasir / kasir123');
 }
 
 main()
