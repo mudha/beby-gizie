@@ -1,0 +1,24 @@
+
+> om-kebab@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.2.1 (Turbopack)
+- Environments: .env
+
+ΓÜá The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 2.7s
+  Running TypeScript ...
+Failed to type check.
+
+./src/app/pengguna/page.tsx:183:57
+Type error: Property 'branch' does not exist on type 'User'. Did you mean 'branchId'?
+
+  181 | ...item) => (
+  182 | ... className={`font-semibold text-gray-600 text-xs ${item.isActive === false ? 'opacity-...
+> 183 | ...em.role === "ADMIN" ? "Akses Pusat" : item.branch?.name || "Belum Ditugaskan"}
+      |                                               ^
+  184 | ...n>
+  185 | ...
+  186 | ...
+Next.js build worker exited with code: 1 and signal: null

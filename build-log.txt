@@ -1,0 +1,28 @@
+
+> om-kebab@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.2.1 (Turbopack)
+- Environments: .env
+
+ΓÜá The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 2.3s
+  Running TypeScript ...
+  Finished TypeScript in 2.4s ...
+  Collecting page data using 15 workers ...
+Error [PrismaClientConstructorValidationError]: Using engine type "client" requires either "adapter" or "accelerateUrl" to be provided to PrismaClient constructor.
+Read more at https://pris.ly/d/client-constructor
+    at module evaluation (C:\Users\armud\.gemini\antigravity\scratch\om-kebab\.next\server\chunks\[root-of-the-server]__020w9sw._.js:1:1483)
+    at instantiateModule (C:\Users\armud\.gemini\antigravity\scratch\om-kebab\.next\server\chunks\[turbopack]_runtime.js:853:9)
+    at getOrInstantiateModuleFromParent (C:\Users\armud\.gemini\antigravity\scratch\om-kebab\.next\server\chunks\[turbopack]_runtime.js:877:12)
+    at Context.esmImport [as i] (C:\Users\armud\.gemini\antigravity\scratch\om-kebab\.next\server\chunks\[turbopack]_runtime.js:281:20)
+    at module evaluation (C:\Users\armud\.gemini\antigravity\scratch\om-kebab\.next\server\chunks\[root-of-the-server]__020w9sw._.js:1:1819)
+    at instantiateModule (C:\Users\armud\.gemini\antigravity\scratch\om-kebab\.next\server\chunks\[turbopack]_runtime.js:853:9)
+    at instantiateRuntimeModule (C:\Users\armud\.gemini\antigravity\scratch\om-kebab\.next\server\chunks\[turbopack]_runtime.js:882:12)
+
+> Build error occurred
+Error: Failed to collect page data for /api/transactions/[id]
+    at ignore-listed frames {
+  type: 'Error'
+}
